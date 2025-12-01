@@ -13,5 +13,5 @@ tiles:
 script-providers:
   countdown_script:
     # 记得换成你自己的 raw 链接
-    url: https://raw.githubusercontent.com/你的用户名/仓库名/main/Scripts/Countdown.js
+    url: https://raw.githubusercontent.com/Stephen-Xu-X/stash--/refs/heads/main/js/countdown.js
     interval: 86400 # 每天刷新一次即可
