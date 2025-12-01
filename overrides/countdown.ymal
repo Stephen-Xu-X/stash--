@@ -1,0 +1,17 @@
+name: "倒数日"
+desc: "显示距离特定日期的天数"
+
+tiles:
+  - name: countdown_tile
+    type: script
+    icon: 'hourglass'
+    # 👇 在这里修改你的目标！无需动代码
+    # 格式：title=事件名&date=2025-12-25
+    argument: 'title=春节&date=2026-02-17' 
+    script: countdown_script
+
+script-providers:
+  countdown_script:
+    # 记得换成你自己的 raw 链接
+    url: https://raw.githubusercontent.com/你的用户名/仓库名/main/Scripts/Countdown.js
+    interval: 86400 # 每天刷新一次即可
