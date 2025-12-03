@@ -6,4 +6,4 @@ tiles:
     backgroundColor: '#008000'
 script-providers:
   ChatGPTjiance:
-    url: https://raw.githubusercontent.com/Stephen-Xu-X/stash--/refs/heads/main/js/streamcheck.js
+    url: https://raw.githubusercontent.com/Stephen-Xu-X/stashmodule/refs/heads/main/js/streamcheck.js
