@@ -1,14 +1,13 @@
-name: "OpenAI 单项检测"
-desc: "极简版连通性测试"
+name: "OpenAI 检测"
+desc: "仿照成功模板制作的检测面板"
 
 tiles:
-  - name: stream_check          # 磁贴ID
-    type: script                # 明确类型
+  - name: streamcheck        # 【关键】名字 A
     icon: 'bolt'
-    backgroundColor: '#10a37f'  # OpenAI 绿
+    backgroundColor: '#10a37f'
 
 script-providers:
-  stream_check:                 # 脚本源ID (必须与上面的 script 对应)
-    # 👇 请务必替换为你自己的 Raw 链接
+  streamcheck:               # 【关键】名字 A (必须与上面完全一致)
+    # 👇 务必换成你自己的 raw 链接
     url: https://raw.githubusercontent.com/Stephen-Xu-X/stash--/main/js/streamcheck.js
-    
+    interval: 3600
