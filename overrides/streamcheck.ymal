@@ -10,4 +10,3 @@ script-providers:
   streamcheck:               # 【关键】名字 A (必须与上面完全一致)
     # 👇 务必换成你自己的 raw 链接
     url: https://raw.githubusercontent.com/Stephen-Xu-X/stash--/main/js/streamcheck.js
-    interval: 3600
