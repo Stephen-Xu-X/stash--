@@ -1,75 +1,68 @@
-// streamcheck.js
+let url = "http://chat.openai.com/cdn-cgi/trace";
+let tf = ["T1","XX","AL","DZ","AD","AO","AG","AR","AM","AU","AT","AZ","BS","BD","BB","BE","BZ","BJ","BT","BA","BW","BR","BG","BF","CV","CA","CL","CO","KM","CR","HR","CY","DK","DJ","DM","DO","EC","SV","EE","FJ","FI","FR","GA","GM","GE","DE","GH","GR","GD","GT","GN","GW","GY","HT","HN","HU","IS","IN","ID","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KW","KG","LV","LB","LS","LR","LI","LT","LU","MG","MW","MY","MV","ML","MT","MH","MR","MU","MX","MC","MN","ME","MA","MZ","MM","NA","NR","NP","NL","NZ","NI","NE","NG","MK","NO","OM","PK","PW","PA","PG","PE","PH","PL","PT","QA","RO","RW","KN","LC","VC","WS","SM","ST","SN","RS","SC","SL","SG","SK","SI","SB","ZA","ES","LK","SR","SE","CH","TH","TG","TO","TT","TN","TR","TV","UG","AE","US","UY","VU","ZM","BO","BN","CG","CZ","VA","FM","MD","PS","KR","TW","TZ","TL","GB"];
+let tff = ["plus","on"];
+let iconUrl = '';
+let iconColor = '';
+let args = {};
 
-const fetch = require("node-fetch");  // 使用 node-fetch 来发送 HTTP 请求
+if (typeof $argument !== 'undefined') {
+  $argument。split('&')。forEach(item => {
+    const [key, value] = item.split('=');
+    args[key] = value;
+  });
+}
 
-const CHATGPT_TEST_URL = "https://api.openai.com/v1/completions";  // ChatGPT API URL（用于检测是否可以访问）
-const TEST_PROMPT = "Hello, ChatGPT! Can you respond to this test request?";
+if (args.icon) {
+  iconUrl = args.icon;
+}
 
-// 检查当前网络是否能访问 ChatGPT
-async function checkChatGPTConnection() {
-  try {
-    const response = await fetch(CHATGPT_TEST_URL, {
-      method: "POST"，
-      headers: {
-        "Content-Type": "application/json"，
-      }，
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo"，  // 选择合适的模型进行测试
-        messages: [{ role: "user", content: TEST_PROMPT }],
-      }),
-    });
+if (args['icon-color']) {
+  iconColor = args['icon-color'];
+}
 
-    if (response。ok) {
-      const region = await getIPRegion();  // 获取当前 IP 地区
-      return {
-        status: "支持",
-        region: region,
-      };
-    } else {
-      const region = await getIPRegion();  // 获取当前 IP 地区
-      return {
-        status: "不支持",
-        region: region,
-      };
+function getFlagEmoji(countryCode， flagMapping) {
+  for (let i = 0; i < flagMapping.length; i++) {
+    if (flagMapping[i][0] === countryCode) {
+      return flagMapping[i][1];
     }
-  } catch (error) {
-    console.error("连接检测失败:", error);
-    const region = await getIPRegion();  // 获取当前 IP 地区
-    return {
-      status: "不支持",
-      region: region,
-    };
   }
+  return '';
 }
 
-// 获取当前 IP 的地区
-async function getIPRegion() {
-  try {
-    const ipInfoResponse = await fetch("https://ipinfo.io/json");  // 使用 ipinfo.io 获取当前 IP 地区
-    const ipInfo = await ipInfoResponse.json();
-    return ipInfo.region || "未知地区";
-  } catch (error) {
-    console.error("无法获取 IP 地区:", error);
-    return "未知地区";
-  }
-}
-
-// 更新磁贴显示的内容
-async function updateTile() {
-  const result = await checkChatGPTConnection();
+$httpClient。get(url， function(error， response, data) {
+  let lines = data.split("\n"); 
+  let cf = lines.reduce((acc, line) => {
+    let [key， value] = line。split("=");
+    acc[key] = value;
+    return acc;
+  }, {});
   
-  // 直接返回结果并更新磁贴内容
-  const resultData = `${result.region}【${result.status}】`;
-
-  console.log("更新检测结果:", resultData);
+  let ip = cf.ip;
+  let warp = cf.warp;
+  let loc = cf.loc;
   
-  // 将结果直接更新到磁贴上
-  // 这个部分取决于 Stash 提供的更新磁贴内容的接口，你可以根据你的环境自定义如何更新显示内容。
-  // 这里假设你能直接把内容显示在磁贴中。
-  return resultData;  // 返回更新的内容
-}
-
-// 执行检测并更新磁贴内容
-updateTile().catch((err) => {
-  console.error("检测脚本执行出错:", err);
+  //loc
+  let l = tf.indexOf(loc);
+  let gpt = (l !== -1) ? "🟢 支持" : "🔴 不支持";
+  
+  //warp
+  let w = tff.indexOf(warp);
+  let warps = (w !== -1) ? "增强" : "未开启";
+  
+  let flagMapping=[
+  ["AC","🇦🇨"],["AD","🇦🇩"],["AE","🇦🇪"],["AF","🇦🇫"],["AG","🇦🇬"],["AI","🇦🇮"],["AL","🇦🇱"],["AM","🇦🇲"],["AO","🇦🇴"],["AQ","🇦🇶"],["AR","🇦🇷"],["AS","🇦🇸"],["AT","🇦🇹"],["AU","🇦🇺"],["AW","🇦🇼"],["AX","🇦🇽"],["AZ","🇦🇿"],["BA","🇧🇦"],["BB","🇧🇧"],["BD","🇧🇩"],["BE","🇧🇪"],["BF","🇧🇫"],["BG","🇧🇬"],["BH","🇧🇭"],["BI","🇧🇮"],["BJ","🇧🇯"],["BM","🇧🇲"],["BN","🇧🇳"],["BO","🇧🇴"],["BR","🇧🇷"],["BS","🇧🇸"],["BT","🇧🇹"],["BV","🇧🇻"],["BW","🇧🇼"],["BY","🇧🇾"],["BZ","🇧🇿"],["CA","🇨🇦"],["CD","🇨🇩"],["CF","🇨🇫"],["CG","🇨🇬"],["CH","🇨🇭"],["CI","🇨🇮"],["CK","🇨🇰"],["CL","🇨🇱"],["CM","🇨🇲"],["CN","🇨🇳"],["CO","🇨🇴"],["CP","🇫🇷"],["CR","🇨🇷"],["CU","🇨🇺"],["CV","🇨🇻"],["CW","🇨🇼"],["CX","🇨🇽"],["CY","🇨🇾"],["CZ","🇨🇿"],["DE","🇩🇪"],["DG","🇩🇬"],["DJ","🇩🇯"],["DK","🇩🇰"],["DM","🇩🇲"],["DO","🇩🇴"],["DZ","🇩🇿"],["EA","🇪🇦"],["EC","🇪🇨"],["EE","🇪🇪"],["EG","🇪🇬"],["EH","🇪🇭"],["ER","🇪🇷"],["ES","🇪🇸"],["ET","🇪🇹"],["EU","🇪🇺"],["FI","🇫🇮"],["FJ","🇫🇯"],["FK","🇫🇰"],["FM","🇫🇲"],["FO","🇫🇴"],["FR","🇫🇷"],["GA","🇬🇦"],["GB","🇬🇧"],["GD","🇬🇩"],["GE","🇬🇪"],["GF","🇬🇫"],["GH","🇬🇭"],["GI","🇬🇮"],["GL","🇬🇱"],["GM","🇬🇲"],["GN","🇬🇳"],["GP","🇬🇵"],["GR","🇬🇷"],["GT","🇬🇹"],["GU","🇬🇺"],["GW","🇬🇼"],["GY","🇬🇾"],["HK","🇭🇰"],["HN","🇭🇳"],["HR","🇭🇷"],["HT","🇭🇹"],["HU","🇭🇺"],["ID","🇮🇩"],["IE","🇮🇪"],["IL","🇮🇱"],["IM","🇮🇲"],["IN","🇮🇳"],["IR","🇮🇷"],["IS","🇮🇸"],["IT","🇮🇹"],["JM","🇯🇲"],["JO","🇯🇴"],["JP","🇯🇵"],["KE","🇰🇪"],["KG","🇰🇬"],["KH","🇰🇭"],["KI","🇰🇮"],["KM","🇰🇲"],["KN","🇰🇳"],["KP","🇰🇵"],["KR","🇰🇷"],["KW","🇰🇼"],["KY","🇰🇾"],["KZ","🇰🇿"],["LA","🇱🇦"],["LB","🇱🇧"],["LC","🇱🇨"],["LI","🇱🇮"],["LK","🇱🇰"],["LR","🇱🇷"],["LS","🇱🇸"],["LT","🇱🇹"],["LU","🇱🇺"],["LV","🇱🇻"],["LY","🇱🇾"],["MA","🇲🇦"],["MC","🇲🇨"],["MD","🇲🇩"],["MG","🇲🇬"],["MH","🇲🇭"],["MK","🇲🇰"],["ML","🇲🇱"],["MM","🇲🇲"],["MN","🇲🇳"],["MO","🇲🇴"],["MP","🇲🇵"],["MQ","🇲🇶"],["MR","🇲🇷"],["MS","🇲🇸"],["MT","🇲🇹"],["MU","🇲🇺"],["MV","🇲🇻"],["MW","🇲🇼"],["MX","🇲🇽"],["MY","🇲🇾"],["MZ","🇲🇿"],["NA","🇳🇦"],["NC","🇳🇨"],["NE","🇳🇪"],["NF","🇳🇫"],["NG","🇳🇬"],["NI","🇳🇮"],["NL","🇳🇱"],["NO","🇳🇴"],["NP","🇳🇵"],["NR","🇳🇷"],["NZ","🇳🇿"],["OM","🇴🇲"],["PA","🇵🇦"],["PE","🇵🇪"],["PF","🇵🇫"],["PG","🇵🇬"],["PH","🇵🇭"],["PK","🇵🇰"],["PL","🇵🇱"],["PM","🇵🇲"],["PR","🇵🇷"],["PS","🇵🇸"],["PT","🇵🇹"],["PW","🇵🇼"],["PY","🇵🇾"],["QA","🇶🇦"],["RE","🇷🇪"],["RO","🇷🇴"],["RS","🇷🇸"],["RU","🇷🇺"],["RW","🇷🇼"],["SA","🇸🇦"],["SB","🇸🇧"],["SC","🇸🇨"],["SD","🇸🇩"],["SE","🇸🇪"],["SG","🇸🇬"],["SI","🇸🇮"],["SK","🇸🇰"],["SL","🇸🇱"],["SM","🇸🇲"],["SN","🇸🇳"],["SR","🇸🇷"],["ST","🇸🇹"],["SV","🇸🇻"],["SY","🇸🇾"],["SZ","🇸🇿"],["TC","🇹🇨"],["TD","🇹🇩"],["TG","🇹🇬"],["TH","🇹🇭"],["TJ","🇹🇯"],["TL","🇹🇱"],["TM","🇹🇲"],["TN","🇹🇳"],["TO","🇹🇴"],["TR","🇹🇷"],["TT","🇹🇹"],["TV","🇹🇻"],["TW","🇨🇳"],["TZ","🇹🇿"],["UA","🇺🇦"],["UG","🇺🇬"],["UK","🇬🇧"],["UM","🇺🇲"],["US","🇺🇸"],["UY","🇺🇾"],["UZ","🇺🇿"],["VA","🇻🇦"],["VC","🇻🇨"],["VE","🇻🇪"],["VG","🇻🇬"],["VI","🇻🇮"],["VN","🇻🇳"],["VU","🇻🇺"],["WS","🇼🇸"],["YE","🇾🇪"],["YT","🇾🇹"],["ZA","🇿🇦"],["ZM","🇿🇲"]
+  ];
+  
+  let flagEmoji = getFlagEmoji(loc, flagMapping);
+  
+  let content = `${gpt}    ${flagEmoji}·${loc}`;
+  
+  let body = {
+    title: "ChatGPT",
+    content: content,
+    icon: iconUrl,
+    'icon-color': iconColor
+  };
+  
+  $done(body);
 });
