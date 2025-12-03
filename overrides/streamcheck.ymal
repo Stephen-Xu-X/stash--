@@ -1,9 +1,0 @@
-name: ChatGPT检测
-desc: ChatGPT检测
-tiles:
-  - name: ChatGPTjiance
-    icon: 'ellipses.bubble.fill'
-    backgroundColor: '#008000'
-script-providers:
-  ChatGPTjiance:
-    url: https://raw.githubusercontent.com/Stephen-Xu-X/stashmodule/refs/heads/main/js/streamcheck.js
