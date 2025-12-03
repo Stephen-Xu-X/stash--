@@ -1,43 +1,75 @@
-/**
- * 极简版 OpenAI 检测
- * 逻辑：直接检测，不需要 YAML 传参
- */
+// streamcheck.js
 
-const url = "https://chat.openai.com/cdn-cgi/trace";
+const fetch = require("node-fetch");  // 使用 node-fetch 来发送 HTTP 请求
 
-$httpClient。get(url， (error, response， data) => {
-  let content = "检测失败";
-  let color = "#ff3b30"; // 红色
-  let icon = "bolt";
+const CHATGPT_TEST_URL = "https://api.openai.com/v1/completions";  // ChatGPT API URL（用于检测是否可以访问）
+const TEST_PROMPT = "Hello, ChatGPT! Can you respond to this test request?";
 
-  if (error) {
-    content = "网络错误";
-  } else {
-    // 解析返回的 loc=XX
-    const match = data。match(/loc=([A-Z]{2})/);
-    if (match) {
-      const region = match[1];
-      const flag = getFlagEmoji(region);
-      content = `OpenAI: ${flag} ${region}`;
-      color = "#10a37f"; // 绿色
+// 检查当前网络是否能访问 ChatGPT
+async function checkChatGPTConnection() {
+  try {
+    const response = await fetch(CHATGPT_TEST_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"，
+      }，
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo"，  // 选择合适的模型进行测试
+        messages: [{ role: "user", content: TEST_PROMPT }],
+      })，
+    });
+
+    if (response。ok) {
+      const region = await getIPRegion();  // 获取当前 IP 地区
+      return {
+        status: "支持",
+        region: region,
+      };
     } else {
-      content = "OpenAI: ❌ N/A";
+      const region = await getIPRegion();  // 获取当前 IP 地区
+      return {
+        status: "不支持"，
+        region: region,
+      };
     }
+  } catch (error) {
+    console。error("连接检测失败:", error);
+    const region = await getIPRegion();  // 获取当前 IP 地区
+    return {
+      status: "不支持",
+      region: region,
+    };
   }
-
-  $done({
-    title: "OpenAI 检测",
-    content: content，
-    icon: icon，
-    backgroundColor: color
-  });
-});
-
-function getFlagEmoji(countryCode) {
-  if (!countryCode) return "🌍";
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
 }
+
+// 获取当前 IP 的地区
+async function getIPRegion() {
+  try {
+    const ipInfoResponse = await fetch("https://ipinfo.io/json");  // 使用 ipinfo.io 获取当前 IP 地区
+    const ipInfo = await ipInfoResponse.json();
+    return ipInfo.region || "未知地区";
+  } catch (error) {
+    console.error("无法获取 IP 地区:", error);
+    return "未知地区";
+  }
+}
+
+// 更新磁贴显示的内容
+async function updateTile() {
+  const result = await checkChatGPTConnection();
+  
+  // 直接返回结果并更新磁贴内容
+  const resultData = `${result.region}【${result.status}】`;
+
+  console.log("更新检测结果:", resultData);
+  
+  // 将结果直接更新到磁贴上
+  // 这个部分取决于 Stash 提供的更新磁贴内容的接口，你可以根据你的环境自定义如何更新显示内容。
+  // 这里假设你能直接把内容显示在磁贴中。
+  return resultData;  // 返回更新的内容
+}
+
+// 执行检测并更新磁贴内容
+updateTile().catch((err) => {
+  console.error("检测脚本执行出错:", err);
+});
